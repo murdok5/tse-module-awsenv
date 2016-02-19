@@ -1,0 +1,24 @@
+{
+  "name": "tse-awsenvironment",
+  "version": "0.2.0",
+  "author": "Puppet Labs TSE Team",
+  "license": "Apache-2.0",
+  "summary": "TSE AWS Demo Environment",
+  "source": "https://github.com/puppetlabs/tse-module-awsenvironment",
+  "project_page": "https://github.com/puppetlabs/tse-module-awsenvironment",
+  "dependencies": [
+          { "name": "puppetlabs/aws", "version_requirement": ">= 1.3.0" }
+  ],
+  "operatingsystem_support": [ ],
+  "requirements": [
+    {
+      "name": "pe",
+      "version_requirement": ">=2015.3.0"
+    },
+    {
+      "name": "puppet",
+      "version_requirement": ">=4.3.0"
+    }
+  ],
+  "data_provider": "hiera"
+}

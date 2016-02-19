@@ -1,0 +1,180 @@
+#!/bin/bash
+#
+# PE Node automated installation script
+# This is automatically generated from a template
+# so a lot of evaulation logic is in the awsdemo/templates/pe_node.erb file
+
+PE_BUILD='<%= @pe_build %>'
+PE_DNS_ALTNAMES='<%= @pe_dns_altnames %>'
+PE_ADMIN_PASSWORD='<%= @pe_admin_password %>'
+PE_ROLE='<%= @pe_role %>'
+AWS_MD_URL='http://169.254.169.254/latest/meta-data/'
+PRIVATE_HOSTNAME=$(curl -fs $AWS_MD_URL/hostname)
+PUBLIC_HOSTNAME=$(curl -fs $AWS_MD_URL/public-hostname)
+INSTANCE_ID=$(curl -fs $AWS_MD_URL/instance-id)
+
+
+# all in one
+function write_answers() {
+  cat > /opt/awsdemo/answers.txt << ANSWERS
+q_all_in_one_install=y
+q_backup_and_purge_old_configuration=n
+q_backup_and_purge_old_database_directory=n
+q_database_host=$PRIVATE_HOSTNAME
+q_database_install=y
+q_install=y
+q_pe_database=y
+q_puppet_cloud_install=y
+q_puppet_enterpriseconsole_auth_password=$PE_ADMIN_PASSWORD
+q_puppet_enterpriseconsole_httpd_port=443
+q_puppet_enterpriseconsole_install=y
+q_puppet_enterpriseconsole_master_hostname=$PRIVATE_HOSTNAME
+q_puppet_symlinks_install=y
+q_puppetagent_certname=$PRIVATE_HOSTNAME
+q_puppetagent_install=y
+q_puppetagent_server=$PRIVATE_HOSTNAME
+q_puppetdb_hostname=$PRIVATE_HOSTNAME
+q_puppetdb_install=y
+q_puppetdb_port=8081
+q_puppetmaster_certname=$PRIVATE_HOSTNAME
+q_puppetmaster_dnsaltnames=$INSTANCE_ID,$PRIVATE_HOSTNAME,$PUBLIC_HOSTNAME,puppet,$PE_DNS_ALTNAMES
+q_puppetmaster_enterpriseconsole_hostname=$PRIVATE_HOSTNAME
+q_puppetmaster_enterpriseconsole_port=443
+q_puppetmaster_install=y
+q_run_updtvpkg=n
+q_vendor_packages_install=y
+<%- if @r10k_repo -%>
+q_puppetmaster_r10k_remote='<%= @r10k_repo %>'
+<%- end -%>
+ANSWERS
+}
+
+function write_csr_attributes () {
+  if [ ! -d /etc/puppetlabs/puppet ]; then
+    mkdir -p /etc/puppetlabs/puppet
+  fi
+
+  cat > /etc/puppetlabs/puppet/csr_attributes.yaml << YAML
+---
+extension_requests:
+  pp_instance_id: $INSTANCE_ID
+<%- if @pp_uuid -%>
+  pp_uuid: '<%= @pp_uuid %>'
+<%- end -%>
+<%- if @pp_preshared_key -%>
+  pp_preshared_key: '<%= @pp_preshared_key %>'
+<%- end -%>
+<%- if @pp_cost_center -%>
+  1.3.6.1.4.1.34380.1.1.5: '<%= @pp_cost_center %>'
+<%- end -%>
+<%- if @pp_product -%>
+  1.3.6.1.4.1.34380.1.1.6: '<%= @pp_product %>'
+<%- end -%>
+<%- if @pp_project -%>
+  1.3.6.1.4.1.34380.1.1.7: '<%= @pp_project %>'
+<%- end -%>
+<%- if @pp_application -%>
+  1.3.6.1.4.1.34380.1.1.8: '<%= @pp_application %>'
+<%- end -%>
+<%- if @pp_service -%>
+  1.3.6.1.4.1.34380.1.1.9: '<%= @pp_service %>'
+<%- end -%>
+<%- if @pp_employee -%>
+  1.3.6.1.4.1.34380.1.1.10: '<%= @pp_employee %>'
+<%- end -%>
+<%- if @pp_created_by -%>
+  1.3.6.1.4.1.34380.1.1.11: '<%= @pp_created_by %>'
+<%- end -%>
+<%- if @pp_environment -%>
+  1.3.6.1.4.1.34380.1.1.12: '<%= @pp_environment %>'
+<%- end -%>
+<%- if @pp_role -%>
+  1.3.6.1.4.1.34380.1.1.13: '<%= @pp_role %>'
+<%- end -%>
+<%- if @pp_software_version -%>
+  1.3.6.1.4.1.34380.1.1.14: '<%= @pp_software_version %>'
+<%- end -%>
+<%- if @pp_department -%>
+  1.3.6.1.4.1.34380.1.1.15: '<%= @pp_department %>'
+<%- end -%>
+<%- if @pp_cluster -%>
+  1.3.6.1.4.1.34380.1.1.16: '<%= @pp_cluster %>'
+<%- end -%>
+<%- if @pp_provisioner -%>
+  1.3.6.1.4.1.34380.1.1.17: '<%= @pp_provisioner %>'
+<%- end -%>
+YAML
+}
+
+function create_opt {
+  /sbin/parted -s /dev/xvdb mklabel gpt
+  /sbin/parted -s /dev/xvdb mkpart primary 0% 100%
+  /sbin/mkfs.ext4 /dev/xvdb1
+  mount /dev/xvdb1 /opt
+  echo "/dev/xvdb1              /opt                    ext4    defaults        0 2" >> /etc/fstab
+  lsblk
+}
+
+function configure_redhat() {
+
+  echo "Disabling SELinux, setting time"
+  setenforce 0
+
+  #living on the edge
+  sed -i 's/^SELINUX=.*/SELINUX=disabled/g' /etc/selinux/config
+
+  yum install -y ntpdate
+
+  ntpdate -u 0.amazon.pool.ntp.org
+
+}
+
+function install_pe() {
+  echo "Installing Puppet Enterprise ${PE_BUILD}"
+  if [ ! -d /opt/awsenvironment/pe ]; then
+    mkdir -p /opt/awsenvironment/pe
+  fi
+  if [ ! -f /opt/awsenvironment/pe/puppet-enterprise-installer ]; then
+    curl -L -o /opt/awsenvironment/pe-installer.tar.gz "https://pm.puppetlabs.com/cgi-bin/download.cgi?ver=$PE_BUILD&dist=el&arch=x86_64&rel=7"
+    tar --extract --file=/opt/awsenvironment/pe-installer.tar.gz --strip-components=1 --directory=/opt/awsdemo/pe/
+  fi
+
+  write_answers
+
+  /opt/awsdemo/pe/puppet-enterprise-installer -a /opt/awsdemo/answers.txt -l /opt/awsdemo/installer.log
+
+  # nuke autosign for right now, we might fix this with a module later for certsigner
+  echo "*" > /etc/puppetlabs/puppet/autosign.conf
+  service pe-puppetserver restart
+}
+
+function install_with_environment() {
+  curl -L -o /opt/awsenvironment/pe-repos.tar.gz https://s3-us-west-2.amazonaws.com/tse-builds/2015.3.x/commits/pe-demo-code-repos-latest.tar.gz
+  mkdir -p /opt/puppetlabs/repos
+  tar xzf /opt/awsenvironment/pe-repos.tar.gz -C /opt/puppetlabs/repos --strip 1
+cat > /etc/puppetlabs/r10k/r10k.yaml << R10KYAML
+  :cachedir: /var/cache/r10k
+  :sources:
+    puppet:
+      basedir: /etc/puppetlabs/code/environments
+      remote: /opt/puppetlabs/repos/puppet-control.git
+R10KYAML
+
+  r10k deploy environment -p -v
+
+  /bin/bash "/etc/puppetlabs/code/environments/production/scripts/deploy.sh"
+}
+
+function provision_puppet() {
+
+  configure_redhat
+
+  create_opt
+
+  install_pe
+
+  install_with_environment
+
+}
+
+provision_puppet
