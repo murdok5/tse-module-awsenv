@@ -41,8 +41,9 @@ define awsenv::nodes::pe(
       'created_by'            => $pp_created_by,
       'pe_role'               => $pe_role,
       'pe_build'              => $pe_build,
+      'pe_admin_password'     => $pe_admin_password,
     },
-    user_data     => template('awsdemo/pe_node.erb'),
+    user_data     => template('awsenv/pe_node.erb'),
     block_devices => [{
       device_name           => '/dev/sdb',
       volume_size           => '100',

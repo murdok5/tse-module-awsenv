@@ -2,7 +2,7 @@
 #
 # PE Node automated installation script
 # This is automatically generated from a template
-# so a lot of evaulation logic is in the awsdemo/templates/pe_node.erb file
+# so a lot of evaulation logic is in the awsenv/templates/pe_node.erb file
 
 PE_BUILD='<%= @pe_build %>'
 PE_DNS_ALTNAMES='<%= @pe_dns_altnames %>'
@@ -16,7 +16,7 @@ INSTANCE_ID=$(curl -fs $AWS_MD_URL/instance-id)
 
 # all in one
 function write_answers() {
-  cat > /opt/awsdemo/answers.txt << ANSWERS
+  cat > /opt/awsenv/answers.txt << ANSWERS
 q_all_in_one_install=y
 q_backup_and_purge_old_configuration=n
 q_backup_and_purge_old_database_directory=n
@@ -131,17 +131,17 @@ function configure_redhat() {
 
 function install_pe() {
   echo "Installing Puppet Enterprise ${PE_BUILD}"
-  if [ ! -d /opt/awsenvironment/pe ]; then
-    mkdir -p /opt/awsenvironment/pe
+  if [ ! -d /opt/awsenv/pe ]; then
+    mkdir -p /opt/awsenv/pe
   fi
-  if [ ! -f /opt/awsenvironment/pe/puppet-enterprise-installer ]; then
-    curl -L -o /opt/awsenvironment/pe-installer.tar.gz "https://pm.puppetlabs.com/cgi-bin/download.cgi?ver=$PE_BUILD&dist=el&arch=x86_64&rel=7"
-    tar --extract --file=/opt/awsenvironment/pe-installer.tar.gz --strip-components=1 --directory=/opt/awsdemo/pe/
+  if [ ! -f /opt/awsenv/pe/puppet-enterprise-installer ]; then
+    curl -L -o /opt/awsenv/pe-installer.tar.gz "https://pm.puppetlabs.com/cgi-bin/download.cgi?ver=$PE_BUILD&dist=el&arch=x86_64&rel=7"
+    tar --extract --file=/opt/awsenv/pe-installer.tar.gz --strip-components=1 --directory=/opt/awsenv/pe/
   fi
 
   write_answers
 
-  /opt/awsdemo/pe/puppet-enterprise-installer -a /opt/awsdemo/answers.txt -l /opt/awsdemo/installer.log
+  /opt/awsenv/pe/puppet-enterprise-installer -a /opt/awsenv/answers.txt -l /opt/awsenv/installer.log
 
   # nuke autosign for right now, we might fix this with a module later for certsigner
   echo "*" > /etc/puppetlabs/puppet/autosign.conf
@@ -149,9 +149,9 @@ function install_pe() {
 }
 
 function install_with_environment() {
-  curl -L -o /opt/awsenvironment/pe-repos.tar.gz https://s3-us-west-2.amazonaws.com/tse-builds/2015.3.x/commits/pe-demo-code-repos-latest.tar.gz
+  curl -L -o /opt/awsenv/pe-repos.tar.gz https://s3-us-west-2.amazonaws.com/tse-builds/2015.3.x/commits/pe-demo-code-repos-latest.tar.gz
   mkdir -p /opt/puppetlabs/repos
-  tar xzf /opt/awsenvironment/pe-repos.tar.gz -C /opt/puppetlabs/repos --strip 1
+  tar xzf /opt/awsenv/pe-repos.tar.gz -C /opt/puppetlabs/repos --strip 1
 cat > /etc/puppetlabs/r10k/r10k.yaml << R10KYAML
   :cachedir: /var/cache/r10k
   :sources:

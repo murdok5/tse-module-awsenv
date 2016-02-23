@@ -12,7 +12,7 @@ class awsenv (
   $master_iam_profile,
   $image_ids,
   $master_instance_type = 'm4.xlarge',
-  $pe_build = 'LATEST',
+  $pe_build = 'latest',
   $vpc_mask    = '10.90.0.0',
   $zone_a_mask = '10.90.10.0',
   $zone_b_mask = '10.90.20.0',
@@ -37,10 +37,10 @@ class awsenv (
     region            => $region,
     instance_type     => $master_instance_type,
     security_groups   => [
-      "${project}-${department}-master",
-      "${project}-${department}-crossconnect"
+      "${department}-${region}-master",
+      "${department}-${region}-crossconnect"
     ],
-    subnet            => "${project}-${department}-avza",
+    subnet            => "${department}-${region}-avza",
     department        => $department,
     project           => $project,
     created_by        => $created_by,
