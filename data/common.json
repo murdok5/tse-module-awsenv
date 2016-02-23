@@ -1,5 +1,5 @@
 {
-  "awsenvironment::image_ids":
+  "awsenv::image_ids":
   {
     "us-west-2" : {
       "redhat7" : "ami-4dbf9e7d",

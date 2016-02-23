@@ -33,7 +33,7 @@ class awsenv (
   }
   awsenv::nodes::pe { "${project}-${department}-${region}-${created_by}-master":
     availability_zone => $availability_zone,
-    image_id          => $image_ids[$region]['redhat7'],
+    image_id          => $image_ids[$region]['centos7'],
     region            => $region,
     instance_type     => $master_instance_type,
     security_groups   => [
@@ -50,6 +50,6 @@ class awsenv (
     pe_build          => $pe_build,
     pe_dns_altnames   => 'master',
     iam_profile       => $master_iam_profile,
-    require           => Awsenv::Vpc["${project}-${department}"]
+    require           => Awsenv::Vpc["${department}-${region}"]
   }
 }
