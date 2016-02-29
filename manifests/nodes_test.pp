@@ -27,12 +27,11 @@ class awsenv::nodes_test (
     subnet          => $agent_subnet,
   }
 
-  $image_ids[$region].each | String $key | {
+  $image_ids[$region].each | String $key, String $value | {
+    notify {"Deploying ${key} with ami-id ${value}": } ->
     awsenv::nodes::agent { "${key}-01":
       pp_role       => 'webserver',
       platform_name => $key,
     }
   }
-
-
 }
