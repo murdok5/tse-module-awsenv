@@ -41,6 +41,7 @@ q_puppetmaster_dnsaltnames=$INSTANCE_ID,$PRIVATE_HOSTNAME,$PUBLIC_HOSTNAME,puppe
 q_puppetmaster_enterpriseconsole_hostname=$PRIVATE_HOSTNAME
 q_puppetmaster_enterpriseconsole_port=443
 q_puppetmaster_install=y
+q_use_application_services=y
 q_run_updtvpkg=n
 q_vendor_packages_install=y
 <%- if @r10k_repo -%>
@@ -149,7 +150,7 @@ function install_pe() {
 }
 
 function install_with_environment() {
-  curl -L -o /opt/awsenv/pe-repos.tar.gz https://s3-us-west-2.amazonaws.com/tse-builds/2015.3.x/commits/pe-demo-code-repos-latest.tar.gz
+  curl -L -o /opt/awsenv/pe-repos.tar.gz https://s3-us-west-2.amazonaws.com/tse-builds/2015.3.x/commits/pe-demo-2015.3.2-v1-1-g491a12a-c1-2-g5ca2dea.tar.gz
   mkdir -p /opt/puppetlabs/repos
   tar xzf /opt/awsenv/pe-repos.tar.gz -C /opt/puppetlabs/repos --strip 1
 cat > /etc/puppetlabs/r10k/r10k.yaml << R10KYAML
@@ -163,6 +164,7 @@ R10KYAML
   r10k deploy environment -p -v
 
   /bin/bash "/etc/puppetlabs/code/environments/production/scripts/deploy.sh"
+  service pe-puppetserver restart
 }
 
 function provision_puppet() {
@@ -170,6 +172,8 @@ function provision_puppet() {
   configure_redhat
 
   create_opt
+
+  write_csr_attributes
 
   install_pe
 

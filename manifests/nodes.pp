@@ -9,7 +9,7 @@ class awsenv::nodes {
   $region               = $::ec2_region
   $agents_sg_name       = "${department}-${region}-agents"
   $crossconnect_sq_name = "${department}-${region}-crossconnect"
-  $agent_subnet         = "${department}-${region}-avza-1"
+  $agent_subnet         = "${department}-${region}-avza"
 
   $public_key = split($::ec2_metadata['public-keys']['0']['openssh-key'], ' ')
   $key_name = $public_key[2]

@@ -3,7 +3,7 @@
 # this uses a selector to determine if we are using the windows template, if not
 # fall through to the linux install script
 
-define awsdemo::nodes::agent (
+define awsenv::nodes::agent (
   $pp_department,
   $pp_project,
   $pp_created_by,

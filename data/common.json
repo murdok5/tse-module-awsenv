@@ -2,34 +2,34 @@
   "awsenv::image_ids":
   {
     "us-west-2" : {
-      "redhat7" : "ami-4dbf9e7d",
-      "redhat6" : "ami-2faa861f",
+      "redhat7" : "ami-ca56b5aa",
+      "redhat6" : "ami-274ba847",
       "centos7": "ami-d440a6e7",
-      "windows2012" : "ami-f8f715cb",
-      "windows2008" : "ami-73b08843",
-      "ubuntu1404" : "ami-3b14370b",
-      "ubuntu1204": "ami-fd7959cd",
-      "amazonlinux" :"ami-7f79544f"
+      "windows2012" : "ami-df8767bf",
+      "windows2008" : "ami-168c6c76",
+      "ubuntu1404" : "ami-4d46582c",
+      "ubuntu1204": "ami-4c514f2d",
+      "amazonlinux" :"ami-42b15122"
     },
     "ap-southeast-2" : {
-      "redhat7" : "ami-4dbf9e7d",
-      "redhat6" : "ami-2faa861f",
+      "redhat7" : "ami-67785e04",
+      "redhat6" : "ami-fa7b5d99",
       "centos7": "ami-d440a6e7",
-      "windows2012" : "ami-f8f715cb",
-      "windows2008" : "ami-73b08843",
-      "ubuntu1404" : "ami-3b14370b",
-      "ubuntu1204": "ami-fd7959cd",
-      "amazonlinux" :"ami-7f79544f"
+      "windows2012" : "ami-db0a2db8",
+      "windows2008" : "ami-f4082f97",
+      "ubuntu1404" : "ami-98bfe4fb",
+      "ubuntu1204": "ami-5885de3b",
+      "amazonlinux" :"ami-a30126c0"
     },
-    "us-east-1" : {
-      "redhat7" : "ami-4dbf9e7d",
-      "redhat6" : "ami-2faa861f",
+    "eu-west-1" : {
+      "redhat7" : "ami-bd9e23ce",
+      "redhat6" : "ami-c1bb06b2",
       "centos7": "ami-d440a6e7",
-      "windows2012" : "ami-f8f715cb",
-      "windows2008" : "ami-73b08843",
-      "ubuntu1404" : "ami-3b14370b",
-      "ubuntu1204": "ami-fd7959cd",
-      "amazonlinux" :"ami-7f79544f"
+      "windows2012" : "ami-8519a9f6",
+      "windows2008" : "ami-7d00b00e",
+      "ubuntu1404" : "ami-581cbe2b",
+      "ubuntu1204": "ami-c404a6b7",
+      "amazonlinux" :"ami-3c38884f"
     }
   }
 }
