@@ -6,7 +6,7 @@
 
 PE_BUILD='<%= @pe_build %>'
 PE_DNS_ALTNAMES='<%= @pe_dns_altnames %>'
-PE_ADMIN_PASSWORD='<%= @pe_admin_password %>'
+PE_ADMIN_PASSWORD='puppetlabs'
 PE_ROLE='<%= @pe_role %>'
 AWS_MD_URL='http://169.254.169.254/latest/meta-data/'
 PRIVATE_HOSTNAME=$(curl -fs $AWS_MD_URL/hostname)
@@ -150,7 +150,7 @@ function install_pe() {
 }
 
 function install_with_environment() {
-  curl -L -o /opt/awsenv/pe-repos.tar.gz https://s3-us-west-2.amazonaws.com/tse-builds/2015.3.x/commits/pe-demo-2015.3.2-v1-1-g491a12a-c1-2-g5ca2dea.tar.gz
+  curl -L -o /opt/awsenv/pe-repos.tar.gz https://s3-us-west-2.amazonaws.com/tse-builds/2015.3.x/commits/pe-demo-code-repos-latest.tar.gz
   mkdir -p /opt/puppetlabs/repos
   tar xzf /opt/awsenv/pe-repos.tar.gz -C /opt/puppetlabs/repos --strip 1
 cat > /etc/puppetlabs/r10k/r10k.yaml << R10KYAML
@@ -165,6 +165,12 @@ R10KYAML
 
   /bin/bash "/etc/puppetlabs/code/environments/production/scripts/deploy.sh"
   service pe-puppetserver restart
+
+  sleep 20
+
+  /opt/puppetlabs/bin/puppet agent -t
+  /opt/puppetlabs/bin/puppet apply -e 'include awsenv::configure'
+  /opt/puppetlabs/bin/puppet apply -e 'include awsenv::nodes'
 }
 
 function provision_puppet() {
