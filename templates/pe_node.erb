@@ -12,6 +12,11 @@ AWS_MD_URL='http://169.254.169.254/latest/meta-data/'
 PRIVATE_HOSTNAME=$(curl -fs $AWS_MD_URL/hostname)
 PUBLIC_HOSTNAME=$(curl -fs $AWS_MD_URL/public-hostname)
 INSTANCE_ID=$(curl -fs $AWS_MD_URL/instance-id)
+<%- if @custom_s3_url -%>
+DOWNLOADURL=<%= @custom_s3_url %>'
+<%- else -%>
+DOWNLOADURL="https://pm.puppetlabs.com/cgi-bin/download.cgi?ver=$PE_BUILD&dist=el&arch=x86_64&rel=7"
+<%- end -%>
 
 
 # all in one
@@ -136,7 +141,7 @@ function install_pe() {
     mkdir -p /opt/awsenv/pe
   fi
   if [ ! -f /opt/awsenv/pe/puppet-enterprise-installer ]; then
-    curl -L -o /opt/awsenv/pe-installer.tar.gz "https://pm.puppetlabs.com/cgi-bin/download.cgi?ver=$PE_BUILD&dist=el&arch=x86_64&rel=7"
+    curl -L -o /opt/awsenv/pe-installer.tar.gz "$DOWNLOADURL"
     tar --extract --file=/opt/awsenv/pe-installer.tar.gz --strip-components=1 --directory=/opt/awsenv/pe/
   fi
 
@@ -170,7 +175,6 @@ R10KYAML
 
   /opt/puppetlabs/bin/puppet agent -t
   /opt/puppetlabs/bin/puppet apply -e 'include awsenv::configure'
-  /opt/puppetlabs/bin/puppet apply -e 'include awsenv::nodes'
 }
 
 function provision_puppet() {

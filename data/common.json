@@ -11,6 +11,16 @@
       "ubuntu1204": "ami-4c514f2d",
       "amazonlinux" :"ami-42b15122"
     },
+    "us-west-1" : {
+      "redhat7" : "ami-ca56b5aa",
+      "redhat6" : "ami-274ba847",
+      "centos7": "ami-d440a6e7",
+      "windows2012" : "ami-df8767bf",
+      "windows2008" : "ami-168c6c76",
+      "ubuntu1404" : "ami-4d46582c",
+      "ubuntu1204": "ami-4c514f2d",
+      "amazonlinux" :"ami-42b15122"
+    },
     "ap-southeast-2" : {
       "redhat7" : "ami-67785e04",
       "redhat6" : "ami-fa7b5d99",

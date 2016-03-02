@@ -16,48 +16,49 @@ class awsenv::proxyhost (
   File{
     owner   => $username,
     group   => $username,
-    mode    => 0700,
+    mode    => '0700',
     require => User[$username]
   }
 
   file {[
     "${userhome}/.puppetlabs",
-    "${userhome}/.puppetlabs/puppet",
+    "${userhome}/.puppetlabs/etc",
+    "${userhome}/.puppetlabs/etc/puppet",
     ]:
     ensure => directory,
   }
-  file {'/home/awsprovisioner/.puppetlabs/puppet/puppet.conf':
+  file {'/home/awsprovisioner/.puppetlabs/etc/puppet/puppet.conf':
     ensure => present,
   }
 
-  file {'/home/awsprovisioner/.puppetlabs/puppet/puppetlabs_aws_configuration.ini':
-    ensure => present,
-  }
+#  file {'/home/awsprovisioner/.puppetlabs/puppet/puppetlabs_aws_configuration.ini':
+#    ensure => present,
+#  }
 
   ini_setting { "${username} puppet servername":
     ensure  => present,
-    path    => "${userhome}/.puppetlabs/puppet/puppet.conf",
+    path    => "${userhome}/.puppetlabs/etc/puppet/puppet.conf",
     section => 'agent',
     setting => 'server',
     value   => $::fqdn,
-    require => File["${userhome}/.puppetlabs/puppet/puppet.conf"]
+    require => File["${userhome}/.puppetlabs/etc/puppet/puppet.conf"]
   }
   ini_setting { "${username} puppet certname":
     ensure  => present,
-    path    => "${userhome}/.puppetlabs/puppet/puppet.conf",
+    path    => "${userhome}/.puppetlabs/etc/puppet/puppet.conf",
     section => 'agent',
     setting => 'certname',
     value   => "${::fqdn}-awsprovisioner",
-    require => File["${userhome}/.puppetlabs/puppet/puppet.conf"]
+    require => File["${userhome}/.puppetlabs/etc/puppet/puppet.conf"]
   }
-  ini_setting { "${username} aws region":
-    ensure  => present,
-    path    => "${userhome}/.puppetlabs/puppet/puppetlabs_aws_configuration.ini",
-    section => 'default',
-    setting => 'region',
-    value   => $region,
-    require => File["${userhome}/.puppetlabs/puppet/puppetlabs_aws_configuration.ini"]
-  }
+#  ini_setting { "${username} aws region":
+#    ensure  => present,
+#    path    => "${userhome}/.puppetlabs/puppet/puppetlabs_aws_configuration.ini",
+#    section => 'default',
+#    setting => 'region',
+#    value   => $region,
+#    require => File["${userhome}/.puppetlabs/puppet/puppetlabs_aws_configuration.ini"]
+#  }
 
   cron { 'cron.puppet.awsprovisioner':
     command => '/opt/puppetlabs/puppet/bin/puppet agent --onetime --no-daemonize',
@@ -85,7 +86,7 @@ class awsenv::proxyhost (
     parent               => 'All Nodes',
     rule                 => ['or', ['=', 'name', "${::fqdn}-awsprovisioner"]],
     classes              => {
-      'awsenv::nodes'    => {},
+      'awsenv::nodes_test'    => {},
     }
   }
 }

@@ -18,7 +18,7 @@ class awsenv (
   $zone_b_mask = '10.90.20.0',
   $zone_c_mask = '10.90.30.0',
 ) {
-  $pe_admin_password = fqdn_rand_string(32, '', "${created_by}${project}${department}${pe_build}")
+  $pe_admin_password = 'puppetlabs'
 
   notify {"PE Admin console initial password is: ${pe_admin_password}": }
 

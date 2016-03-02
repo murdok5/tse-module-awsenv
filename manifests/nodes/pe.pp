@@ -17,6 +17,7 @@ define awsenv::nodes::pe(
   $pe_build,
   $pe_dns_altnames,
   $iam_profile,
+  $custom_s3_url = undef,
   $nodename = $title,
 ) {
   $pp_role = $pe_role
