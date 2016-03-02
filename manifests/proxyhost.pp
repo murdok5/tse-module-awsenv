@@ -39,7 +39,7 @@ class awsenv::proxyhost (
     path    => "${userhome}/.puppetlabs/puppet/puppet.conf",
     section => 'agent',
     setting => 'server',
-    value   => $::servername,
+    value   => $::fqdn,
     require => File["${userhome}/.puppetlabs/puppet/puppet.conf"]
   }
   ini_setting { "${username} puppet certname":
